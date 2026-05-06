@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: snake-io
+    env: static
+    buildCommand: cd src/frontend/features/dot-collector-game && npm install && npm run build
+    staticPublishPath: src/frontend/features/dot-collector-game/build
+    pullRequestPreviewsEnabled: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
