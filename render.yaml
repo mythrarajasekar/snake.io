@@ -2,7 +2,7 @@ services:
   - type: web
     name: snake-io
     env: static
-    buildCommand: cd src/frontend/features/dot-collector-game && npm install && npm run build
+    buildCommand: cd src/frontend/features/dot-collector-game && npm install --legacy-peer-deps && npm run build
     staticPublishPath: src/frontend/features/dot-collector-game/build
     pullRequestPreviewsEnabled: true
     routes:

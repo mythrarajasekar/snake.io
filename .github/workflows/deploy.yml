@@ -23,7 +23,7 @@ jobs:
           cache-dependency-path: src/frontend/features/dot-collector-game/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Type check
         run: npm run type-check
