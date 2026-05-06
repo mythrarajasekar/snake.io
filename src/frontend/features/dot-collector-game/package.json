@@ -1,7 +1,7 @@
 {
   "name": "dot-collector-game",
   "version": "1.0.0",
-  "homepage": "https://YOUR_USERNAME.github.io/dot-collector-game",
+  "homepage": "/",
   "description": "A fast-paced dot collection game built with React and Canvas",
   "author": "Your Name",
   "license": "MIT",

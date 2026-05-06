@@ -1,3 +1,0 @@
-# This is a React/TypeScript frontend app.
-# Node dependencies are managed via package.json.
-# This file is kept as required by the project structure.

@@ -1,3 +1,4 @@
+
 // Responsibility: Small pure helpers used by the game module.
 export function randomBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
