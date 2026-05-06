@@ -17,6 +17,11 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "react-scripts": "5.0.1",
@@ -30,8 +35,26 @@
     "build": "react-scripts build",
     "serve": "serve -s build -l 5000",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
     "type-check": "tsc --noEmit",
     "lint": "eslint src/ --ext .ts,.tsx"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 25,
+        "functions": 30,
+        "lines": 30,
+        "statements": 30
+      }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/index.tsx",
+      "!src/App.tsx",
+      "!src/**/*.d.ts",
+      "!src/setupTests.ts"
+    ]
   },
   "browserslist": {
     "production": [

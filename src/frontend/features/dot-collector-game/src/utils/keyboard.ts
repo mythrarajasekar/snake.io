@@ -48,15 +48,14 @@ export class KeyboardInputManager {
     }
   };
 
-  startListening() {
+  startListening(): void {
     if (this.listenersAttached) return;
-    // Use document-level listeners in capture phase so input works regardless of focused element.
     document.addEventListener('keydown', this.handleKeyDown, { passive: false, capture: true });
     document.addEventListener('keyup', this.handleKeyUp, { capture: true });
     this.listenersAttached = true;
   }
 
-  stopListening() {
+  stopListening(): void {
     if (!this.listenersAttached) return;
     document.removeEventListener('keydown', this.handleKeyDown, { capture: true } as EventListenerOptions);
     document.removeEventListener('keyup', this.handleKeyUp, { capture: true } as EventListenerOptions);
@@ -69,14 +68,22 @@ export class KeyboardInputManager {
     return { ...this.state };
   }
 
-  subscribe(cb: Subscriber) {
+  // For touch controls
+  setDirection(dir: keyof InputState, pressed: boolean): void {
+    if (this.state[dir] !== pressed) {
+      this.state[dir] = pressed;
+      this.notify();
+    }
+  }
+
+  subscribe(cb: Subscriber): () => void {
     this.subscribers.push(cb);
     return () => {
       this.subscribers = this.subscribers.filter((c) => c !== cb);
     };
   }
 
-  private notify() {
+  private notify(): void {
     const snapshot = { ...this.state };
     for (const cb of this.subscribers) cb(snapshot);
   }

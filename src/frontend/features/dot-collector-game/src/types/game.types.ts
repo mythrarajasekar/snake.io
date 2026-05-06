@@ -1,4 +1,6 @@
 export type GameStatus = 'idle' | 'running' | 'paused' | 'gameOver';
+export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+export type DotType = 'common' | 'rare' | 'bonus';
 
 export interface PlayerState {
   x: number;
@@ -6,11 +8,10 @@ export interface PlayerState {
   width: number;
   height: number;
   speed: number;
+  lives: number;
   vx?: number;
   vy?: number;
-  // tail segments for classic snake behavior (ordered from head->tail)
   segments?: { x: number; y: number }[];
-  // desired tail length (number of segments)
   tailLength?: number;
 }
 
@@ -20,6 +21,15 @@ export interface DotState {
   y: number;
   radius: number;
   value: number;
+  dotType: DotType;
+}
+
+export interface ObstacleState {
+  id: string;
+  x: number;  // top-left
+  y: number;  // top-left
+  width: number;
+  height: number;
 }
 
 export interface ParticleState {
@@ -31,19 +41,38 @@ export interface ParticleState {
   ttl: number;
 }
 
+export interface ScorePopup {
+  id: string;
+  x: number;
+  y: number;
+  value: number;
+  alpha: number;
+  ttl: number;
+  elapsed: number;
+}
+
 export interface GameState {
   player: PlayerState;
   dots: DotState[];
-  particles?: ParticleState[];
+  obstacles: ObstacleState[];
+  particles: ParticleState[];
+  scorePopups: ScorePopup[];
   score: number;
+  dotsCollected: number;
+  collectedRare: boolean;
+  collectedBonus: boolean;
   timeLeft: number;
   status: GameStatus;
+  difficulty: DifficultyLevel;
+  speedMultiplier: number;
+  invincibleUntil: number;
 }
 
 export interface GameConfig {
   width: number;
   height: number;
   durationSeconds: number;
+  difficulty?: DifficultyLevel;
   maxDots?: number;
   spawnIntervalMs?: number;
 }

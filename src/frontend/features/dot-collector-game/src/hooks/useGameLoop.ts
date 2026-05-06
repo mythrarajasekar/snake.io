@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import GameLoop from '../game/GameLoop';
 import { GameState, GameConfig } from '../types/game.types';
+import { RENDER_INTERVAL_MS } from '../constants/game.constants';
 
 export function useGameLoop(initialState: GameState, config: GameConfig) {
   const [state, setState] = useState<GameState>(initialState);
@@ -13,8 +14,7 @@ export function useGameLoop(initialState: GameState, config: GameConfig) {
     loopRef.current = loop;
     const unsubscribe = loop.onTick((s) => {
       const now = performance.now();
-      const minMs = 1000 / 30;
-      if (now - lastRenderRef.current >= minMs) {
+      if (now - lastRenderRef.current >= RENDER_INTERVAL_MS) {
         lastRenderRef.current = now;
         setState({ ...s });
       }

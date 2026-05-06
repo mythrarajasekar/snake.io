@@ -28,6 +28,9 @@ jobs:
       - name: Type check
         run: npm run type-check
 
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
       - name: Build
         run: npm run build
 

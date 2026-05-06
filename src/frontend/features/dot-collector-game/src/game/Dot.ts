@@ -1,5 +1,16 @@
-import { DotState, PlayerState } from '../types/game.types';
+import { DotState, PlayerState, DotType } from '../types/game.types';
 import { randomBetween } from '../utils/helpers';
+import { DOT_SPAWN_MAX_ATTEMPTS, DOT_TYPE_CONFIG } from '../constants/game.constants';
+
+function pickDotType(): DotType {
+  const rand = Math.random();
+  let cumulative = 0;
+  for (const [type, cfg] of Object.entries(DOT_TYPE_CONFIG)) {
+    cumulative += cfg.weight;
+    if (rand < cumulative) return type as DotType;
+  }
+  return 'common';
+}
 
 export class Dot implements DotState {
   id: string;
@@ -7,18 +18,27 @@ export class Dot implements DotState {
   y: number;
   radius: number;
   value: number;
+  dotType: DotType;
 
-  constructor(id: string, x: number, y: number, radius = 8, value = 1) {
+  constructor(id: string, x: number, y: number, dotType: DotType = 'common') {
+    const cfg = DOT_TYPE_CONFIG[dotType];
     this.id = id;
     this.x = x;
     this.y = y;
-    this.radius = radius;
-    this.value = value;
+    this.dotType = dotType;
+    this.radius = cfg.radius;
+    this.value = cfg.value;
   }
 
-  static spawnRandom(id: string, bounds: { width: number; height: number }, player?: PlayerState, radius = 8): Dot {
-    const maxAttempts = 12;
-    for (let i = 0; i < maxAttempts; i++) {
+  static spawnRandom(
+    id: string,
+    bounds: { width: number; height: number },
+    player?: PlayerState,
+  ): Dot {
+    const dotType = pickDotType();
+    const radius = DOT_TYPE_CONFIG[dotType].radius;
+
+    for (let i = 0; i < DOT_SPAWN_MAX_ATTEMPTS; i++) {
       const x = randomBetween(radius, Math.max(radius, bounds.width - radius));
       const y = randomBetween(radius, Math.max(radius, bounds.height - radius));
       if (player) {
@@ -28,9 +48,9 @@ export class Dot implements DotState {
           continue;
         }
       }
-      return new Dot(id, x, y, radius, 1);
+      return new Dot(id, x, y, dotType);
     }
-    return new Dot(id, bounds.width / 2, bounds.height / 2, radius, 1);
+    return new Dot(id, bounds.width / 2, bounds.height / 2, dotType);
   }
 }
 

@@ -1,4 +1,10 @@
-import { PlayerState } from '../types/game.types';
+import { PlayerState, InputState } from '../types/game.types';
+import {
+  PLAYER_WIDTH,
+  PLAYER_HEIGHT,
+  PLAYER_SPEED,
+  PLAYER_FOLLOW_STRENGTH_FACTOR,
+} from '../constants/game.constants';
 
 export class Player implements PlayerState {
   x: number;
@@ -6,6 +12,7 @@ export class Player implements PlayerState {
   width: number;
   height: number;
   speed: number;
+  lives: number;
   vx?: number;
   vy?: number;
   segments?: { x: number; y: number }[];
@@ -13,23 +20,31 @@ export class Player implements PlayerState {
   private dirX = 0;
   private dirY = 0;
 
-  constructor(x = 0, y = 0, width = 32, height = 32, speed = 200) {
+  constructor(
+    x = 0,
+    y = 0,
+    width = PLAYER_WIDTH,
+    height = PLAYER_HEIGHT,
+    speed = PLAYER_SPEED,
+    lives = 3,
+  ) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.speed = speed;
+    this.lives = lives;
     this.vx = 0;
     this.vy = 0;
     this.segments = [];
     this.tailLength = 0;
   }
 
-  static centered(canvasWidth: number, canvasHeight: number) {
+  static centered(canvasWidth: number, canvasHeight: number): Player {
     return new Player(canvasWidth / 2, canvasHeight / 2);
   }
 
-  updateFromInput(input: import('../types/game.types').InputState, dt: number, bounds: { width: number; height: number }) {
+  updateFromInput(input: InputState, dt: number, bounds: { width: number; height: number }): void {
     let dx = 0;
     let dy = 0;
     if (input.left) dx -= 1;
@@ -38,7 +53,6 @@ export class Player implements PlayerState {
     if (input.down) dy += 1;
 
     const len = Math.hypot(dx, dy);
-    // In snake movement, one key press sets direction and movement continues.
     if (len > 0) {
       this.dirX = dx / len;
       this.dirY = dy / len;
@@ -47,7 +61,6 @@ export class Player implements PlayerState {
     this.vx = this.dirX * this.speed;
     this.vy = this.dirY * this.speed;
 
-    // record previous head position for tail growth
     const prevX = this.x;
     const prevY = this.y;
 
@@ -55,9 +68,8 @@ export class Player implements PlayerState {
     this.y += this.vy * dt;
 
     if (!this.segments) this.segments = [];
-    const desired = Math.max(0, this.tailLength || 0);
+    const desired = Math.max(0, this.tailLength ?? 0);
 
-    // Keep exactly desired number of segments.
     while (this.segments.length < desired) {
       this.segments.push({ x: prevX, y: prevY });
     }
@@ -65,12 +77,10 @@ export class Player implements PlayerState {
       this.segments.pop();
     }
 
-    // Follow-the-leader: each segment eases toward the previous segment/head.
     let leaderX = this.x;
     let leaderY = this.y;
-    const followStrength = Math.min(1, dt * 14);
-    for (let i = 0; i < this.segments.length; i++) {
-      const seg = this.segments[i];
+    const followStrength = Math.min(1, dt * PLAYER_FOLLOW_STRENGTH_FACTOR);
+    for (const seg of this.segments) {
       seg.x += (leaderX - seg.x) * followStrength;
       seg.y += (leaderY - seg.y) * followStrength;
       leaderX = seg.x;
